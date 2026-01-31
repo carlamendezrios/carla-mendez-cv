@@ -2273,27 +2273,32 @@
       botWindow.style.display = botWindow.style.display === 'none' ? 'block' : 'none';
     }
 
-    async function callAI() {
-      const company = document.getElementById('company-input').value;
-      const role = document.getElementById('role-input').value;
-      const content = document.getElementById('chat-content');
-      const btn = document.getElementById('send-btn');
+async function startMatchAnalysis() {
+    // 1. Leemos lo que el visitante escribió en los cuadros
+    const inputEmpresa = document.querySelector('input[placeholder="BAIA"]').value;
+    const inputPuesto = document.querySelector('input[placeholder="NPD"]').value;
 
-      if (!company || !role) return;
+    // Si están vacíos, avisamos al usuario
+    if (!inputEmpresa || !inputPuesto) {
+        alert("Por favor, cubre ambos campos para que mi IA pueda trabajar.");
+        return;
+    }
 
-      btn.disabled = true;
-      btn.innerHTML = '<span>ANALYZING...</span><span style="margin-left: 8px;">⏳</span>';
+    // 2. Enviamos esos datos reales a tu función de Vercel
+    const response = await fetch('/api/gemini-match', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            company: inputEmpresa, // Esto es lo que el usuario escribió en BAIA
+            role: inputPuesto      // Esto es lo que el usuario escribió en NPD
+        })
+    });
 
-      try {
-        const response = await fetch('/api/gemini-match', { // <--- CAMBIO AQUÍ
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ 
-                  company: document.querySelector('input[placeholder="BAIA"]').value, 
-                  role: document.querySelector('input[placeholder="NPD"]').value 
-              })
-          });
-        const data = await response.json();
+    const data = await response.json();
+
+    // 3. Mostramos el resultado dinámico en el recuadro negro
+    document.querySelector('.match-analysis-box p').innerText = data.text;
+}
         
         content.innerHTML += `
           <div style="margin-top: 16px; animation: fadeIn 0.5s ease;">
@@ -2323,6 +2328,7 @@
 </body>
 
 </html>
+
 
 
 
