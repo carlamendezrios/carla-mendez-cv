@@ -2308,13 +2308,14 @@
       const data = await response.json();
 
       // Inyectamos la respuesta de Gemini 2.5 Flash
-      content.innerHTML += `
-        <div style="margin-top: 16px;">
-          <div style="background: #1a1a1a; color: #fff; padding: 16px; border-left: 4px solid #6b7280; font-size: 11px;">
-            <p style="line-height: 1.6; white-space: pre-wrap;">${data.text}</p>
-          </div>
-        </div>
-      `;
+    const aiMessage = data.text || (data.candidates && data.candidates[0].content.parts[0].text) || "Análisis completado.";
+content.innerHTML += `
+  <div style="margin-top: 16px;">
+    <div style="background: #1a1a1a; color: #fff; padding: 16px; border-left: 4px solid #6b7280; font-size: 11px;">
+      <p style="line-height: 1.6; white-space: pre-wrap;">${aiMessage}</p>
+    </div>
+  </div>
+`;
     } catch (error) {
       content.innerHTML += `
         <div style="margin-top: 16px; background: #fee2e2; color: #991b1b; padding: 16px; border-left: 4px solid #dc2626; font-size: 11px;">
@@ -2328,4 +2329,5 @@
     }
   }
 </script>
+
 
