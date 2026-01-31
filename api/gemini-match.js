@@ -40,10 +40,14 @@ ADAPTACIÓN POR TIPO DE PUESTO:
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: systemInstruction }] }]
+     body: JSON.stringify({
+        system_instruction: {
+          parts: [{ text: systemInstruction }]
+        },
+        contents: [{ 
+          parts: [{ text: `Realiza el análisis para la empresa "${company}" y el rol "${role}".` }] 
+        }]
       })
-    });
 
     const data = await response.json();
     
