@@ -2268,10 +2268,13 @@
 
   <script>
 
+
   // ==================== BOT FUNCTIONS ====================
   function toggleBot() {
     const botWindow = document.getElementById('bot-window');
-    botWindow.style.display = botWindow.style.display === 'none' ? 'block' : 'none';
+    // Usamos getComputedStyle para una detección más robusta
+    const currentDisplay = window.getComputedStyle(botWindow).display;
+    botWindow.style.display = currentDisplay === 'none' ? 'block' : 'none';
   }
 
   async function callAI() {
@@ -2288,11 +2291,11 @@
     btn.disabled = true;
     btn.innerHTML = '<span>ANALYZING...</span> ⏳';
 
-    content.innerHTML += `
-      <div style="margin-top: 16px; padding: 12px; background: #f5f5f5; border-left: 4px solid #1a1a1a;">
-        <p style="font-size: 11px; color: #666;">Analizando match con <strong>${company}</strong> para <strong>${role}</strong>...</p>
-      </div>
-    `;
+    // Añadimos indicador de carga visual
+    const loadingDiv = document.createElement('div');
+    loadingDiv.style = "margin-top: 16px; padding: 12px; background: #f5f5f5; border-left: 4px solid #1a1a1a;";
+    loadingDiv.innerHTML = `<p style="font-size: 11px; color: #666;">Analizando match para <strong>${company}</strong>...</p>`;
+    content.appendChild(loadingDiv);
     content.scrollTop = content.scrollHeight;
 
     try {
@@ -2304,6 +2307,7 @@
 
       const data = await response.json();
 
+      // Inyectamos la respuesta de Gemini 2.5 Flash
       content.innerHTML += `
         <div style="margin-top: 16px;">
           <div style="background: #1a1a1a; color: #fff; padding: 16px; border-left: 4px solid #6b7280; font-size: 11px;">
@@ -2313,21 +2317,14 @@
       `;
     } catch (error) {
       content.innerHTML += `
-        <div style="margin-top: 16px;">
-          <div style="background: #fee2e2; color: #991b1b; padding: 16px; border-left: 4px solid #dc2626; font-size: 11px;">
-            <p>Error de conexión. Intenta de nuevo.</p>
-          </div>
+        <div style="margin-top: 16px; background: #fee2e2; color: #991b1b; padding: 16px; border-left: 4px solid #dc2626; font-size: 11px;">
+          <p>Error de conexión con Carla_AI. Revisa tu red.</p>
         </div>
       `;
     } finally {
       btn.disabled = false;
-      btn.innerHTML = '<span>START MATCH ANALYSIS</span><svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      btn.innerHTML = '<span>START MATCH ANALYSIS</span> <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
       content.scrollTop = content.scrollHeight;
-      document.getElementById('company-input').value = '';
-      document.getElementById('role-input').value = '';
     }
   }
-  </script>
-</body>
-</html>
-
+</script>
