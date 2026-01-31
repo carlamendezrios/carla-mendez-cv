@@ -2269,58 +2269,79 @@
   <script>
 
 
-  // ==================== BOT FUNCTIONS ====================
+// ==================== BOT FUNCTIONS ====================
+  
+  // 1. Esta función abre y cierra la ventana
   function toggleBot() {
     const botWindow = document.getElementById('bot-window');
-    // Usamos getComputedStyle para una detección más robusta
+    if (!botWindow) {
+      console.error("No se encontró el elemento 'bot-window'");
+      return;
+    }
     const currentDisplay = window.getComputedStyle(botWindow).display;
-    botWindow.style.display = currentDisplay === 'none' ? 'block' : 'none';
+    botWindow.style.display = (currentDisplay === 'none') ? 'block' : 'none';
   }
 
-async function callAI() {
-  // Capturamos los valores reales de los cuadros de texto
-  const company = document.getElementById('company-input').value.trim();
-  const role = document.getElementById('role-input').value.trim();
-  const content = document.getElementById('chat-content');
-  const btn = document.getElementById('send-btn');
+  // 2. Esta función llama a la IA con tu prompt de Studio
+  async function callAI() {
+    const companyInput = document.getElementById('company-input');
+    const roleInput = document.getElementById('role-input');
+    const content = document.getElementById('chat-content');
+    const btn = document.getElementById('send-btn');
 
-  if (!company || !role) return;
+    if (!companyInput || !roleInput) {
+      console.error("No se encuentran los inputs de texto");
+      return;
+    }
 
-  btn.disabled = true;
-  btn.innerHTML = '<span>ANALYZING...</span> ⏳';
+    const company = companyInput.value.trim();
+    const role = roleInput.value.trim();
 
-  // Añadimos mensaje de carga
-  content.innerHTML += `<div style="margin-top: 10px; color: #666; font-size: 10px; font-style: italic;">
-    Conectando con el cerebro estratégico de Carla...
-  </div>`;
+    if (!company || !role) {
+      alert('Por favor, completa empresa y puesto.');
+      return;
+    }
 
-  try {
-    const response = await fetch('/api/gemini-match', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ company, role })
-    });
-
-    const data = await response.json();
-
-    // Aquí evitamos el "undefined"
-    const finalMessage = data.text || "Hubo un problema con la respuesta.";
+    // Bloqueo de botón y estado de carga
+    btn.disabled = true;
+    btn.innerHTML = '<span>ANALYZING...</span> ⏳';
 
     content.innerHTML += `
-      <div style="margin-top: 16px; background: #1a1a1a; color: #fff; padding: 16px; border-left: 4px solid #6b7280; font-size: 11px;">
-        <p style="line-height: 1.6; white-space: pre-wrap;">${finalMessage}</p>
+      <div style="margin-top: 16px; padding: 12px; background: #f5f5f5; border-left: 4px solid #1a1a1a;">
+        <p style="font-size: 11px; color: #666;">Conectando con el cerebro estratégico de Carla para analizar <strong>${company}</strong>...</p>
       </div>
     `;
     content.scrollTop = content.scrollHeight;
-  } catch (error) {
-    content.innerHTML += `<p style="color:red; font-size:10px;">Error de red.</p>`;
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = '<span>START MATCH ANALYSIS</span>';
+
+    try {
+      const response = await fetch('/api/gemini-match', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ company, role })
+      });
+
+      const data = await response.json();
+
+      // Extracción segura para evitar el error "undefined"
+      const finalMessage = data.text || "Hubo un problema al generar el análisis.";
+
+      content.innerHTML += `
+        <div style="margin-top: 16px;">
+          <div style="background: #1a1a1a; color: #fff; padding: 16px; border-left: 4px solid #6b7280; font-size: 11px;">
+            <p style="line-height: 1.6; white-space: pre-wrap;">${finalMessage}</p>
+          </div>
+        </div>
+      `;
+    } catch (error) {
+      content.innerHTML += `<p style="color:red; font-size:10px; margin-top:10px;">Error de conexión. Inténtalo de nuevo.</p>`;
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<span>START MATCH ANALYSIS</span>';
+      content.scrollTop = content.scrollHeight;
+      // Opcional: limpiar campos tras éxito
+      companyInput.value = '';
+      roleInput.value = '';
+    }
   }
-}
-  <script>
-
-
 
 
