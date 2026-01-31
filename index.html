@@ -2285,12 +2285,14 @@
       btn.innerHTML = '<span>ANALYZING...</span><span style="margin-left: 8px;">⏳</span>';
 
       try {
-        const response = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ company, role })
-        });
-
+        const response = await fetch('/api/gemini-match', { // <--- CAMBIO AQUÍ
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ 
+                  company: document.querySelector('input[placeholder="BAIA"]').value, 
+                  role: document.querySelector('input[placeholder="NPD"]').value 
+              })
+          });
         const data = await response.json();
         
         content.innerHTML += `
@@ -2321,6 +2323,7 @@
 </body>
 
 </html>
+
 
 
 
