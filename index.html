@@ -2267,67 +2267,83 @@
   </div>
 
   <script>
-    // ==================== BOT FUNCTIONS ====================
-    function toggleBot() {
-      const botWindow = document.getElementById('bot-window');
-      botWindow.style.display = botWindow.style.display === 'none' ? 'block' : 'none';
+
+<script>
+  // ==================== BOT FUNCTIONS ====================
+  function toggleBot() {
+    const botWindow = document.getElementById('bot-window');
+    botWindow.style.display = botWindow.style.display === 'none' ? 'block' : 'none';
+  }
+
+  async function callAI() {
+    const company = document.getElementById('company-input').value.trim();
+    const role = document.getElementById('role-input').value.trim();
+    const content = document.getElementById('chat-content');
+    const btn = document.getElementById('send-btn');
+
+    if (!company || !role) {
+      alert('Por favor, completa empresa y puesto.');
+      return;
     }
 
-async function startMatchAnalysis() {
-    // 1. Leemos lo que el visitante escribió en los cuadros
-    const inputEmpresa = document.querySelector('input[placeholder="BAIA"]').value;
-    const inputPuesto = document.querySelector('input[placeholder="NPD"]').value;
+    btn.disabled = true;
+    btn.innerHTML = '<span>ANALYZING...</span> ⏳';
 
-    // Si están vacíos, avisamos al usuario
-    if (!inputEmpresa || !inputPuesto) {
-        alert("Por favor, cubre ambos campos para que mi IA pueda trabajar.");
-        return;
-    }
+    content.innerHTML += `
+      <div style="margin-top: 16px; padding: 12px; background: #f5f5f5; border-left: 4px solid #1a1a1a;">
+        <p style="font-size: 11px; color: #666;">Analizando match con <strong>${company}</strong> para <strong>${role}</strong>...</p>
+      </div>
+    `;
+    content.scrollTop = content.scrollHeight;
 
-    // 2. Enviamos esos datos reales a tu función de Vercel
-    const response = await fetch('/api/gemini-match', {
+    try {
+      const response = await fetch('/api/gemini-match', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-            company: inputEmpresa, // Esto es lo que el usuario escribió en BAIA
-            role: inputPuesto      // Esto es lo que el usuario escribió en NPD
-        })
-    });
+        body: JSON.stringify({ company, role })
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    // 3. Mostramos el resultado dinámico en el recuadro negro
-    document.querySelector('.match-analysis-box p').innerText = data.text;
-}
-        
-        content.innerHTML += `
-          <div style="margin-top: 16px; animation: fadeIn 0.5s ease;">
-            <div style="background: #1a1a1a; color: #fff; padding: 16px; border-left: 4px solid #6b7280; font-size: 11px;">
-              <p style="font-style: italic; font-weight: 700; margin-bottom: 8px;">Soy un bot diseñado por Carla...</p>
-              <p style="line-height: 1.5;">${data.text || 'Análisis completado. Contacta directamente para más detalles.'}</p>
-            </div>
+      content.innerHTML += `
+        <div style="margin-top: 16px;">
+          <div style="background: #1a1a1a; color: #fff; padding: 16px; border-left: 4px solid #6b7280; font-size: 11px;">
+            <p style="line-height: 1.6; white-space: pre-wrap;">${data.text}</p>
           </div>
-        `;
-      } catch (error) {
-        content.innerHTML += `
-          <div style="margin-top: 16px;">
-            <div style="background: #1a1a1a; color: #fff; padding: 16px; border-left: 4px solid #6b7280; font-size: 11px;">
-              <p style="font-style: italic; font-weight: 700; margin-bottom: 8px;">Análisis de Match:</p>
-              <p style="line-height: 1.5;">Basándome en el perfil de <strong>${company}</strong> y el rol de <strong>${role}</strong>, identifico sinergias en: gestión de proyectos, optimización de procesos y aplicación de IA. Contacta directamente para profundizar.</p>
-            </div>
+        </div>
+      `;
+    } catch (error) {
+      content.innerHTML += `
+        <div style="margin-top: 16px;">
+          <div style="background: #fee2e2; color: #991b1b; padding: 16px; border-left: 4px solid #dc2626; font-size: 11px;">
+            <p>Error de conexión. Intenta de nuevo.</p>
           </div>
-        `;
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = '<span>START MATCH ANALYSIS</span><svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-        content.scrollTop = content.scrollHeight;
-      }
+        </div>
+      `;
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<span>START MATCH ANALYSIS</span><svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      content.scrollTop = content.scrollHeight;
+      document.getElementById('company-input').value = '';
+      document.getElementById('role-input').value = '';
     }
-  </script>
-
+  }
+</script>
 </body>
-
 </html>
+```
+
+---
+
+## PASO 5: Estructura de archivos (esto es en tu repositorio, NO en el HTML)
+```
+carla-mendez-cv/
+├── index.html              ← Tu CV con el script del paso 4
+├── api/
+│   └── gemini-match.js     ← El endpoint del paso 2
+└── assets/
+    ├── whatsapp-intro.png
+    └── 202601251853.mp4
 
 
 
