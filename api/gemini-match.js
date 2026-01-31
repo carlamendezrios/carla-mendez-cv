@@ -35,31 +35,29 @@ ADAPTACIÓN POR TIPO DE PUESTO:
 - PROJECT MANAGEMENT/PMO: Enfócate en coordinación entre departamentos, visibilidad de hitos y centralización de datos.
 - I+D+i / CALIDAD: Enfócate en conectar el laboratorio con la viabilidad comercial y el escalado industrial.`;
 
-  try {
-    // Usamos el modelo 2.5 Flash que tienes en tu Studio
+try {
+    // CAMBIO CLAVE: Usar v1beta para que acepte system_instruction
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-     body: JSON.stringify({
+      body: JSON.stringify({
         system_instruction: {
           parts: [{ text: systemInstruction }]
         },
         contents: [{ 
-          parts: [{ text: `Realiza el análisis para la empresa "${company}" y el rol "${role}".` }] 
+          parts: [{ text: `Analiza la sinergia para la empresa "${company}" y el puesto "${role}".` }] 
         }]
       })
+    });
 
     const data = await response.json();
     
-    // Verificamos la ruta de la respuesta en el JSON de Gemini
     if (data.candidates && data.candidates[0].content) {
       const aiText = data.candidates[0].content.parts[0].text;
       res.status(200).json({ text: aiText });
     } else {
-      console.error('Error en formato de respuesta:', data);
-      res.status(500).json({ error: 'La IA no devolvió un formato válido' });
+      // Si hay error, Vercel nos lo dirá en los logs
+      console.error('Respuesta de API:', data);
+      res.status(500).json({ error: 'La IA no respondió con el formato esperado' });
     }
-  } catch (error) {
-    res.status(500).json({ error: 'Error de conexión con Gemini 2.5' });
   }
-}
