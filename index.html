@@ -2277,57 +2277,49 @@
     botWindow.style.display = currentDisplay === 'none' ? 'block' : 'none';
   }
 
-  async function callAI() {
-    const company = document.getElementById('company-input').value.trim();
-    const role = document.getElementById('role-input').value.trim();
-    const content = document.getElementById('chat-content');
-    const btn = document.getElementById('send-btn');
+async function callAI() {
+  // Capturamos los valores reales de los cuadros de texto
+  const company = document.getElementById('company-input').value.trim();
+  const role = document.getElementById('role-input').value.trim();
+  const content = document.getElementById('chat-content');
+  const btn = document.getElementById('send-btn');
 
-    if (!company || !role) {
-      alert('Por favor, completa empresa y puesto.');
-      return;
-    }
+  if (!company || !role) return;
 
-    btn.disabled = true;
-    btn.innerHTML = '<span>ANALYZING...</span> ⏳';
+  btn.disabled = true;
+  btn.innerHTML = '<span>ANALYZING...</span> ⏳';
 
-    // Añadimos indicador de carga visual
-    const loadingDiv = document.createElement('div');
-    loadingDiv.style = "margin-top: 16px; padding: 12px; background: #f5f5f5; border-left: 4px solid #1a1a1a;";
-    loadingDiv.innerHTML = `<p style="font-size: 11px; color: #666;">Analizando match para <strong>${company}</strong>...</p>`;
-    content.appendChild(loadingDiv);
+  // Añadimos mensaje de carga
+  content.innerHTML += `<div style="margin-top: 10px; color: #666; font-size: 10px; font-style: italic;">
+    Conectando con el cerebro estratégico de Carla...
+  </div>`;
+
+  try {
+    const response = await fetch('/api/gemini-match', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ company, role })
+    });
+
+    const data = await response.json();
+
+    // Aquí evitamos el "undefined"
+    const finalMessage = data.text || "Hubo un problema con la respuesta.";
+
+    content.innerHTML += `
+      <div style="margin-top: 16px; background: #1a1a1a; color: #fff; padding: 16px; border-left: 4px solid #6b7280; font-size: 11px;">
+        <p style="line-height: 1.6; white-space: pre-wrap;">${finalMessage}</p>
+      </div>
+    `;
     content.scrollTop = content.scrollHeight;
-
-    try {
-      const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ company, role })
-      });
-
-      const data = await response.json();
-
-      // Inyectamos la respuesta de Gemini 2.5 Flash
-    const aiMessage = data.text || (data.candidates && data.candidates[0].content.parts[0].text) || "Análisis completado.";
-content.innerHTML += `
-  <div style="margin-top: 16px;">
-    <div style="background: #1a1a1a; color: #fff; padding: 16px; border-left: 4px solid #6b7280; font-size: 11px;">
-      <p style="line-height: 1.6; white-space: pre-wrap;">${aiMessage}</p>
-    </div>
-  </div>
-`;
-    } catch (error) {
-      content.innerHTML += `
-        <div style="margin-top: 16px; background: #fee2e2; color: #991b1b; padding: 16px; border-left: 4px solid #dc2626; font-size: 11px;">
-          <p>Error de conexión con Carla_AI. Revisa tu red.</p>
-        </div>
-      `;
-    } finally {
-      btn.disabled = false;
-      btn.innerHTML = '<span>START MATCH ANALYSIS</span> <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-      content.scrollTop = content.scrollHeight;
-    }
+  } catch (error) {
+    content.innerHTML += `<p style="color:red; font-size:10px;">Error de red.</p>`;
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span>START MATCH ANALYSIS</span>';
   }
-</script>
+}
+
+
 
 
