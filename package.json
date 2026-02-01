@@ -1,0 +1,13 @@
+{
+  "name": "carla-mendez-cv",
+  "version": "1.0.0",
+  "description": "CV Web con IA Match Bot",
+  "main": "index.html",
+  "scripts": {
+    "start": "vercel dev"
+  },
+  "engines": {
+    "node": "20.x"
+  },
+  "dependencies": {}
+}
