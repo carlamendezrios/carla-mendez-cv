@@ -4,12 +4,12 @@ export default async function handler(req, res) {
   const { company, role } = req.body;
   const API_KEY = process.env.GEMINI_API_KEY;
 
-  if (!API_KEY) return res.status(500).json({ text: "Error: Configuración incompleta." });
+  if (!API_KEY) {
+    return res.status(500).json({ text: "Error interno: Configuración de API ausente." });
+  }
 
-  // Prompt optimizado para evitar bloqueos de seguridad de la IA
-  const promptText = `Actúa como Carla Méndez, Ingeniera Alimentaria y PM. 
-  Analiza brevemente por qué tu perfil es ideal para la empresa ${company} en el puesto de ${role}. 
-  Responde de forma profesional y tecnológica en español. Máximo 3 frases.`;
+  // Prompt optimizado para ser directo y evitar filtros de seguridad
+  const promptText = `Analiza brevemente por qué el perfil de Carla Méndez (Ingeniera Alimentaria y Project Manager con +40 proyectos) es un gran match para la empresa ${company} en el puesto de ${role}. Responde de forma profesional, tecnológica y breve en español.`;
 
   try {
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
@@ -22,17 +22,22 @@ export default async function handler(req, res) {
 
     const data = await response.json();
     
-    // Si la IA responde pero hay un problema de seguridad o formato
-    const cleanText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    
-    if (!cleanText) {
-      console.error("Respuesta vacía de Gemini:", data);
-      return res.status(200).json({ text: "La IA no ha podido generar una respuesta ahora mismo. Intenta con otra empresa." });
+    // Si la API de Google devuelve un error específico (como clave inválida o cuota)
+    if (data.error) {
+      console.error("Gemini Error:", data.error);
+      return res.status(200).json({ text: "La IA está descansando. Intenta de nuevo en un momento." });
     }
-    
-    return res.status(200).json({ text: cleanText });
+
+    // Extraemos el texto de forma más segura
+    const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    if (!resultText) {
+      return res.status(200).json({ text: "Match analizado, pero el formato de respuesta fue inesperado. Prueba con otra empresa." });
+    }
+
+    return res.status(200).json({ text: resultText.trim() });
 
   } catch (error) {
-    return res.status(500).json({ text: "Error de conexión con el cerebro de la IA." });
+    return res.status(500).json({ text: "Error de conexión con el motor de análisis." });
   }
 }
