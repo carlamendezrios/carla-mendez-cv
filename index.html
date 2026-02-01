@@ -2223,32 +2223,28 @@
   </script>
 
   <!-- ==================== AI MATCH BOT ==================== -->
-  <div id="pns-bot" style="position: fixed; bottom: 32px; right: 32px; z-index: 9999; display: flex; flex-direction: column; align-items: flex-end; font-family: 'Inter', sans-serif;">
-    
-    <!-- Bot Window -->
+<div id="pns-bot" style="position: fixed; bottom: 32px; right: 32px; z-index: 9999; display: flex; flex-direction: column; align-items: flex-end; font-family: 'Inter', sans-serif;">
+
     <div id="bot-window" style="display: none; width: 400px; background: #fff; border: 2px solid #1a1a1a; box-shadow: 8px 8px 0px 0px rgba(0,0,0,1); margin-bottom: 16px; overflow: hidden; font-style: italic;">
       
-      <!-- Header -->
       <div style="padding: 12px 16px; background: #1a1a1a; color: #fff; display: flex; justify-content: space-between; align-items: center;">
         <span style="font-family: monospace; font-size: 9px; font-weight: 700; letter-spacing: 0.2em;">CARLA_AI // STRATEGIC_MATCH</span>
-        <button onclick="toggleBot()" style="font-size: 9px; font-weight: 700; background: none; border: none; color: #fff; cursor: pointer;">CLOSE [X]</button>
+        <button id="close-bot-btn" style="font-size: 9px; font-weight: 700; background: none; border: none; color: #fff; cursor: pointer;">CLOSE [X]</button>
       </div>
       
-      <!-- Chat Content -->
       <div id="chat-content" style="height: 280px; overflow-y: auto; padding: 24px; font-family: monospace; font-size: 12px; line-height: 1.6; background: #fff; color: #1a1a1a;">
         <div style="border-left: 4px solid #1a1a1a; padding-left: 16px;">
           <p style="color: #6b7280; font-style: italic;">Introduce los detalles para que mi IA analice la sinergia con tu organización.</p>
         </div>
       </div>
 
-      <!-- Input Area -->
       <div style="padding: 20px; border-top: 2px solid #1a1a1a; background: #fafafa;">
         <input type="text" id="company-input" placeholder="EMPRESA / LINKEDIN..." 
                style="width: 100%; background: #fff; border: 2px solid #1a1a1a; padding: 12px; font-family: monospace; font-size: 10px; outline: none; text-transform: uppercase; font-style: italic; margin-bottom: 8px; box-sizing: border-box;">
         <input type="text" id="role-input" placeholder="PUESTO (EJ: PROJECT MANAGER)..." 
                style="width: 100%; background: #fff; border: 2px solid #1a1a1a; padding: 12px; font-family: monospace; font-size: 10px; outline: none; text-transform: uppercase; font-style: italic; margin-bottom: 8px; box-sizing: border-box;">
         
-        <button onclick="callAI()" id="send-btn" style="width: 100%; background: #1a1a1a; color: #fff; padding: 14px; font-weight: 900; text-transform: uppercase; font-style: italic; letter-spacing: 0.1em; display: flex; justify-content: center; align-items: center; gap: 8px; cursor: pointer; border: none; font-size: 11px; transition: background 0.2s;">
+        <button id="submit-match-btn" style="width: 100%; background: #1a1a1a; color: #fff; padding: 14px; font-weight: 900; text-transform: uppercase; font-style: italic; letter-spacing: 0.1em; display: flex; justify-content: center; align-items: center; gap: 8px; cursor: pointer; border: none; font-size: 11px; transition: background 0.2s;">
           <span>START MATCH ANALYSIS</span>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
             <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -2257,8 +2253,7 @@
       </div>
     </div>
 
-    <!-- Toggle Button -->
-    <button onclick="toggleBot()" style="background: #1a1a1a; color: #fff; padding: 16px 24px; border: 2px solid #1a1a1a; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: transform 0.2s; box-shadow: 4px 4px 0px 0px rgba(0,0,0,0.3);">
+    <button id="toggle-bot-btn" style="background: #1a1a1a; color: #fff; padding: 16px 24px; border: 2px solid #1a1a1a; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: transform 0.2s; box-shadow: 4px 4px 0px 0px rgba(0,0,0,0.3);">
       <span style="font-family: monospace; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.2em; font-style: italic;">Start Match Analysis</span>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
         <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -2267,64 +2262,65 @@
   </div>
 
   <script>
-
-
-// ==================== BOT FUNCTIONS ====================
-  
-// ==================== BOT FUNCTIONS ====================
-  
-  // 1. Abre y cierra la ventana
-  // 1. Forzamos que la función sea global para que el botón la encuentre sí o sí
-  window.toggleBot = function() {
-    const botWindow = document.getElementById('bot-window');
-    if (!botWindow) {
-        console.error("No se encontró el elemento 'bot-window'");
-        return;
-    }
-    const currentDisplay = window.getComputedStyle(botWindow).display;
-    botWindow.style.display = (currentDisplay === 'none') ? 'block' : 'none';
-  };
-
-  // 2. Función de llamada a la IA corregida para evitar el "undefined"
-  window.callAI = async function() {
-    const company = document.getElementById('company-input').value.trim();
-    const role = document.getElementById('role-input').value.trim();
-    const content = document.getElementById('chat-content');
-    const btn = document.getElementById('send-btn');
-
-    if (!company || !role) {
-      alert('Por favor, completa empresa y puesto.');
-      return;
-    }
-
-    btn.disabled = true;
-    const originalBtnText = btn.innerHTML;
-    btn.innerHTML = '<span>ANALYZING...</span> ⏳';
-
-    try {
-      const response = await fetch('/api/gemini-match', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ company, role })
-      });
-
-      const data = await response.json();
+    // Usamos DOMContentLoaded para asegurar que todo el HTML existe antes de asignar funciones
+    document.addEventListener('DOMContentLoaded', function() {
       
-      // Buscamos el texto en 'data.text' que es lo que envía tu API corregida
-      const resultText = data.text || "Análisis completado. Revisa la consola si no ves texto.";
+      const botWindow = document.getElementById('bot-window');
+      const toggleBtn = document.getElementById('toggle-bot-btn');
+      const closeBtn = document.getElementById('close-bot-btn');
+      const submitBtn = document.getElementById('submit-match-btn');
 
-      content.innerHTML += `
-        <div style="margin-top: 16px;">
-          <div style="background: #1a1a1a; color: #fff; padding: 16px; border-left: 4px solid #6b7280; font-size: 11px;">
-            <p style="line-height: 1.6; white-space: pre-wrap;">${resultText}</p>
-          </div>
-        </div>
-      `;
-    } catch (error) {
-      content.innerHTML += `<p style="color:red; font-size:10px; margin-top:10px;">Error de conexión con la API.</p>`;
-    } finally {
-      btn.disabled = false;
-      btn.innerHTML = originalBtnText;
-      content.scrollTop = content.scrollHeight;
-    }
-  };
+      // Función para abrir/cerrar
+      function toggleBot() {
+        const isHidden = window.getComputedStyle(botWindow).display === 'none';
+        botWindow.style.display = isHidden ? 'block' : 'none';
+      }
+
+      // Asignar clics
+      if(toggleBtn) toggleBtn.onclick = toggleBot;
+      if(closeBtn) closeBtn.onclick = toggleBot;
+
+      // Función de llamada a la IA
+      if(submitBtn) {
+        submitBtn.onclick = async function() {
+          const company = document.getElementById('company-input').value.trim();
+          const role = document.getElementById('role-input').value.trim();
+          const content = document.getElementById('chat-content');
+
+          if (!company || !role) {
+            alert('Por favor, completa empresa y puesto.');
+            return;
+          }
+
+          submitBtn.disabled = true;
+          const originalContent = submitBtn.innerHTML;
+          submitBtn.innerHTML = '<span>ANALYZING...</span> ⏳';
+
+          try {
+            const response = await fetch('/api/gemini-match', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ company, role })
+            });
+
+            const data = await response.json();
+            const resultText = data.text || "Análisis completado.";
+
+            content.innerHTML += `
+              <div style="margin-top: 16px;">
+                <div style="background: #1a1a1a; color: #fff; padding: 16px; border-left: 4px solid #6b7280; font-size: 11px;">
+                  <p style="line-height: 1.6; white-space: pre-wrap;">${resultText}</p>
+                </div>
+              </div>
+            `;
+          } catch (error) {
+            content.innerHTML += `<p style="color:red; font-size:10px; margin-top:10px;">Error de conexión.</p>`;
+          } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalContent;
+            content.scrollTop = content.scrollHeight;
+          }
+        };
+      }
+    });
+  </script>
