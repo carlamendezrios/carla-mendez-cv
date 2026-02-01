@@ -1,25 +1,28 @@
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
-
-export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+// No necesitamos importar fetch, Vercel ya lo incluye de forma nativa en Node 18+
+module.exports = async (req, res) => {
+  // Manejo de CORS y método
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
 
   const { company, role } = req.body;
   const API_KEY = process.env.GEMINI_API_KEY;
 
-  // Prompt optimizado para un mejor análisis
+  // Aquí es donde la respuesta se vuelve dinámica basándose en el input
   const promptText = `
     Eres el asistente estratégico de Carla Méndez, Ingeniera Alimentaria y Project Manager.
-    Actúa con un tono profesional, tecnológico y entusiasta.
     
-    Analiza la sinergia entre el perfil de Carla y esta oportunidad:
+    TAREA: Analiza la sinergia entre Carla y la oportunidad:
     - Empresa: ${company}
     - Puesto: ${role}
     
+    PERFIL DE CARLA: Especialista en escalar proyectos alimentarios con IA, +40 proyectos gestionados, perfil híbrido técnico-estratégico.
+    
     INSTRUCCIONES:
-    1. Empieza siempre con: "Soy un bot diseñado por Carla..."
-    2. Explica por qué sus +40 proyectos y su perfil híbrido encajan.
-    3. Sé breve (máximo 150 palabras).
-    4. Finaliza invitando a contactar en linkedin.com/in/carla-mendez-rios.
+    1. Inicia: "Soy un bot diseñado por Carla..."
+    2. Explica por qué es el "match" ideal para ${company} en el rol de ${role}.
+    3. Sé creativo, breve y usa un tono tecnológico profesional.
+    4. Cierra con su LinkedIn: linkedin.com/in/carla-mendez-rios.
   `;
 
   try {
@@ -33,15 +36,14 @@ export default async function handler(req, res) {
 
     const data = await response.json();
     
-    // Manejo de errores de la API de Google
     if (data.error) {
-      return res.status(500).json({ text: "Error de API: " + data.error.message });
+      return res.status(500).json({ text: "Error de Gemini: " + data.error.message });
     }
 
-    const cleanText = data.candidates?.[0]?.content?.parts?.[0]?.text || "No pude generar el análisis, intenta de nuevo.";
+    const cleanText = data.candidates?.[0]?.content?.parts?.[0]?.text || "Análisis completado satisfactoriamente.";
     return res.status(200).json({ text: cleanText });
 
   } catch (error) {
-    return res.status(500).json({ text: "Error en el servidor al conectar con Gemini." });
+    return res.status(500).json({ text: "Error de servidor al procesar el match." });
   }
-}
+};
