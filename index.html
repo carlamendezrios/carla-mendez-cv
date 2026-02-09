@@ -108,102 +108,102 @@
     }
 
     /* ==================== NIVEL 1: HERO (Pas Normal Style) ==================== */
-    .hero-image-full {
-      width: 100%;
-      height: 70vh;
-      min-height: 500px;
-      background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
-      position: relative;
-      overflow: hidden;
-    }
+   /* ==================== NIVEL 1: HERO (LATERAL STYLE) ==================== */
+.hero {
+  display: flex;
+  align-items: stretch; /* Estira la imagen para que ocupe todo el alto */
+  min-height: 85vh;
+  gap: 0;
+  flex-wrap: wrap; /* Para móviles: el texto irá arriba y la foto abajo */
+  background: #fff;
+  overflow: hidden;
+}
 
-    .hero-image-full img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      filter: grayscale(100%);
-    }
+/* Columna de Texto */
+.hero-content {
+  flex: 1;
+  min-width: 350px;
+  padding: 80px 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: left; /* Alineación a la izquierda */
+  opacity: 0;
+  animation: fadeInUp 1s ease-out forwards;
+}
 
-    .hero-content {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 80px 40px;
-      text-align: center;
-    }
+/* Columna de Imagen */
+.hero-image-full {
+  flex: 1;
+  min-width: 350px;
+  height: auto;
+  min-height: 500px;
+  background: #f4f4f4;
+  opacity: 0;
+  animation: fadeInRight 1.2s ease-out forwards;
+  animation-delay: 0.2s;
+}
 
-    .hero-label {
-      font-size: 12px;
-      color: #666;
-      letter-spacing: 2.5px;
-      text-transform: uppercase;
-      margin-bottom: 24px;
-    }
+.hero-image-full img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(100%);
+  display: block;
+}
 
-    .hero-h1 {
-      font-size: clamp(38px, 5.5vw, 56px);
-      font-weight: 400;
-      letter-spacing: -0.02em;
-      line-height: 1.15;
-      margin-bottom: 24px;
-    }
+/* Tipografía Ajustada */
+.hero-label {
+  font-size: 11px;
+  color: #888;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
 
-    .hero-h2 {
-      font-size: 18px;
-      font-weight: 400;
-      color: #444;
-      line-height: 1.6;
-      margin-bottom: 24px;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
-    }
+.hero-h1 {
+  font-size: clamp(32px, 5vw, 60px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  margin-bottom: 24px;
+  color: #1a1a1a;
+}
 
-    .hero-microcopy {
-      font-size: 14px;
-      font-weight: 300;
-      color: #666;
-      line-height: 1.7;
-      max-width: 560px;
-      margin: 0 auto 40px;
-    }
+.hero-h2 {
+  font-size: 18px;
+  font-weight: 500;
+  color: #1a1a1a;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  max-width: 500px;
+}
 
-    .hero-buttons {
-      display: flex;
-      gap: 16px;
-      justify-content: center;
-    }
+.hero-microcopy {
+  font-size: 14px;
+  font-weight: 400;
+  color: #666;
+  line-height: 1.7;
+  max-width: 480px;
+  margin-bottom: 30px;
+}
 
-    .btn-primary {
-      padding: 14px 28px;
-      background: #1a1a1a;
-      border: none;
-      color: #fff;
-      font-size: 13px;
-      font-family: inherit;
-      cursor: pointer;
-      transition: background 0.2s ease;
-      letter-spacing: 0.5px;
-    }
+.hero-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-start;
+}
 
-    .btn-primary:hover {
-      background: #333;
-    }
+/* Animaciones */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
-    .btn-secondary {
-      padding: 14px 28px;
-      background: transparent;
-      border: 1px solid #ddd;
-      color: #1a1a1a;
-      font-size: 13px;
-      font-family: inherit;
-      cursor: pointer;
-      letter-spacing: 0.5px;
-      transition: border-color 0.2s ease;
-    }
-
-    .btn-secondary:hover {
-      border-color: #999;
-    }
+@keyframes fadeInRight {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
 
     /* ==================== NIVEL 2: LOGOS ==================== */
     .logos {
@@ -756,39 +756,38 @@
   </div>
 
   <!-- ==================== NIVEL 1: HERO ==================== -->
-  <section class="hero">
-    <!-- Foto full width arriba -->
-    <div class="hero-image-full">
-      <!-- Reemplazar con: <img src="foto-profesional.jpg" alt="Carla Méndez"> -->
+ <section class="hero">
+  <div class="hero-content">
+    <p class="hero-label">FOOD ENGINEER · PROJECT MANAGER · MSc AI</p>
+    
+    <h1 class="hero-h1">Where Food<br>Engineering meets AI</h1>
+    
+    <h2 class="hero-h2">
+      Especializada en escalar eficiencia operativa y transformar 
+      sistemas alimentarios mediante inteligencia artificial y mejora continua.
+    </h2>
+
+    <p class="hero-microcopy">
+      4 países (Corea, Seychelles, Australia, Irlanda), un premio al mejor expediente, 
+      y una obsesión: transformar la industria alimentaria. Actualmente liderando la 
+      eficiencia operativa de 3 empresas, uniendo la bota de planta con el código.
+    </p>
+
+    <div class="hero-buttons">
+      <a href="https://www.linkedin.com/in/carla-mendez-rios/" target="_blank" class="btn-primary" style="text-decoration: none;">
+        Let's talk Innovation
+      </a>
+      
+      <a href="assets/CV_Carla_Mendez.pdf" download="CV_Carla_Mendez_Rios" class="btn-secondary" style="text-decoration: none;">
+        Descargar CV
+      </a>
     </div>
+  </div>
 
-    <!-- Contenido centrado debajo -->
-    <div class="hero-content">
-      <p class="hero-label">FOOD ENGINEER · PROJECT MANAGER · MSc ARTIFICIAL INTELLIGENCE</p>
-      
-      <h1 class="hero-h1">Where Food Engineering meets AI</h1>
-      
-      <h2 class="hero-h2">
-        Especializada en escalar eficiencia operativa y transformar 
-        sistemas alimentarios mediante inteligencia artificial y mejora continua.
-      </h2>
-
-      <p class="hero-microcopy">
-        4 países (Corea, Seychelles, Australia, Irlanda), un premio al mejor expediente, 
-        y una obsesión: transformar la industria alimentaria. Actualmente liderando la 
-        eficiencia operativa de 3 empresas, uniendo la bota de planta con el código.
-      </p>
-
-<div class="hero-buttons" style="display: flex; gap: 15px; margin-top: 30px;">
-        <a href="https://www.linkedin.com/in/carla-mendez-rios/" target="_blank" class="btn-primary" style="text-decoration: none; display: inline-block;">
-          Let's talk Innovation
-        </a>
-        
-        <a href="assets/CV_Carla_Mendez.pdf" download="CV_Carla_Mendez_Rios" class="btn-secondary" style="text-decoration: none; display: inline-block;">
-          Descargar CV
-        </a>
-      </div>
-    </div> </div> </section>
+  <div class="hero-image-full">
+    <img src="assets/Gemini_Generated_Image.png" alt="Carla Méndez">
+  </div>
+</section>
 
   <!-- ==================== NIVEL 2: LOGOS ==================== -->
   <section class="logos">
@@ -2355,6 +2354,7 @@
       }
     });
   </script>
+
 
 
 
